@@ -1,0 +1,14 @@
+# DSU colors; must match remap_panel/theme.py (checked by tests).
+[theme]
+base = "light"
+primaryColor = "#004165"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F4F4"
+textColor = "#4D4F53"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

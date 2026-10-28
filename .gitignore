@@ -1,0 +1,8 @@
+# Written by setup.sh / setup.ps1; holds WEBUI_SECRET_KEY
+.env
+# Each student's own tools, created by setup
+workspace/
+# Temp folders from scripts/smoke-test.sh
+.smoke-*/
+.DS_Store
+__pycache__/

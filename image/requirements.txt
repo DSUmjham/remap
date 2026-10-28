@@ -1,0 +1,7 @@
+# mcp 2.x renamed FastMCP; mcpo, pyghidra-mcp and most examples still use 1.x.
+mcp[cli]>=1.9,<2
+mcpo>=0.0.17
+# mcpo 0.0.20 passes ssl_certfile to FastAPI(), which fastapi 0.145+ rejects.
+fastapi<0.145
+streamlit>=1.40
+docker>=7.0

@@ -1,0 +1,89 @@
+# REMAP: Start with ./setup.sh, then `docker compose up -d`
+#
+# tools      MCP tools, served as REST by mcpo (no Docker socket)
+# panel      Streamlit control panel 
+# open-webui chat UI, pre-wired to the tool servers
+# ollama     optional local model (profile "local-model")
+# remap-pyghidra is started by the panel on demand, on the same network
+
+x-lab-image: &lab-image
+  image: ${LAB_IMAGE:-ghcr.io/dsumjham/remap:latest}
+
+services:
+  tools:
+    <<: *lab-image
+    container_name: remap-tools
+    command: ["python", "/opt/lab/supervisor.py"]
+    user: "${LAB_UID:-1000}:${LAB_GID:-1000}"
+    restart: unless-stopped
+    environment:
+      PYGHIDRA_HOST: remap-pyghidra
+    volumes:
+      - ./workspace:/workspace
+      - remap_state:/state
+    ports:
+      - "127.0.0.1:8001:8000"   # Swagger docs at http://localhost:8001/<tool>/docs
+    networks: [remap_net]
+
+  panel:
+    <<: *lab-image
+    container_name: remap-panel
+    command: ["streamlit", "run", "/opt/lab/panel/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    user: "0:0"
+    restart: unless-stopped
+    working_dir: /opt/lab/panel
+    environment:
+      TOOLS_URL: http://tools:8000
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      PYTHONPATH: /opt/lab/panel
+      REMAP_NETWORK: remap_net
+      REMAP_PROJECTS_VOLUME: remap_projects
+    volumes:
+      - ./workspace:/workspace:ro
+      - remap_state:/state
+      - remap_projects:/projects
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:8501:8501"
+    networks: [remap_net]
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: remap-webui
+    restart: unless-stopped
+    environment:
+      WEBUI_NAME: REMAP
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:?run ./setup.sh first}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      # Read on first boot only. Later changes are made in Admin Settings > Tools.
+      TOOL_SERVER_CONNECTIONS: >-
+        [{"type":"openapi","url":"http://tools:8000/hello","path":"openapi.json","auth_type":"none","config":{"enable":true},"info":{"id":"hello","name":"hello"}},
+         {"type":"openapi","url":"http://tools:8000/pyghidra","path":"openapi.json","auth_type":"none","config":{"enable":true},"info":{"id":"pyghidra","name":"pyghidra"}}]
+    volumes:
+      - openwebui:/app/backend/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:3000:8080"
+    networks: [remap_net]
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: remap-ollama
+    profiles: [local-model]
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    networks: [remap_net]
+
+networks:
+  remap_net:
+    name: remap_net
+
+volumes:
+  remap_state:
+    name: remap_state
+  remap_projects:
+    name: remap_projects
+  openwebui:
+  ollama:
