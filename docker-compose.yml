@@ -79,8 +79,8 @@ services:
       ENABLE_CALENDAR: "False"
       # Read on first boot only. Later changes are made in Admin Settings > Tools.
       TOOL_SERVER_CONNECTIONS: >-
-        [{"type":"openapi","url":"http://tools:8000/hello","path":"openapi.json","auth_type":"none","config":{"enable":true},"info":{"id":"hello","name":"hello"}},
-         {"type":"openapi","url":"http://tools:8000/pyghidra","path":"openapi.json","auth_type":"none","config":{"enable":true},"info":{"id":"pyghidra","name":"pyghidra"}}]
+        [{"type":"openapi","url":"http://tools:8000/hello","path":"openapi.json","auth_type":"none","key":"","config":{"enable":true},"info":{"id":"hello","name":"hello"}},
+         {"type":"openapi","url":"http://tools:8000/pyghidra","path":"openapi.json","auth_type":"none","key":"","config":{"enable":true},"info":{"id":"pyghidra","name":"pyghidra"}}]
     volumes:
       - openwebui:/app/backend/data
     extra_hosts:
