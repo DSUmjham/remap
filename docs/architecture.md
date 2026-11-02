@@ -47,6 +47,10 @@ container the panel creates on demand:
 All of them join the `remap_net` network and reach each other by container or service name
 (`tools`, `remap-pyghidra`, `ollama`).
 
+Compose also has a `pyghidra-pull` service that only exists to download the pyghidra-mcp image during
+`docker compose up`, so the first Ghidra start is quick. It exits immediately and shows as a stopped
+`remap-pyghidra-pull` container.
+
 ## MCP Tools Exposed as REST
 
 Custom tools are ordinary [MCP](https://modelcontextprotocol.io) servers written with the Python SDK's
@@ -167,7 +171,8 @@ When you press **Start / apply project**, `ghidra.start()`:
 
 1. Lists the binaries in `/projects/<project>/binaries` (and refuses an empty project).
 2. Removes any existing `remap-pyghidra` container.
-3. Runs a new one from `ghcr.io/clearbluejar/pyghidra-mcp` (override with `PYGHIDRA_IMAGE`) on
+3. Runs a new one from `ghcr.io/clearbluejar/pyghidra-mcp` (set `PYGHIDRA_IMAGE` in `.env` to change it;
+   compose passes the same value to the panel and the pull service) on
    `remap_net`, with the `remap_projects` volume at `/projects`, the label `remap.project=<project>`, and
    restart policy `unless-stopped`. The arguments are:
    ```

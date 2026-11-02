@@ -9,6 +9,9 @@
 x-lab-image: &lab-image
   image: ${LAB_IMAGE:-ghcr.io/dsumjham/remap:latest}
 
+# One place for the pyghidra-mcp image: compose pulls it, the panel runs it.
+x-pyghidra-image: &pyghidra-image ${PYGHIDRA_IMAGE:-ghcr.io/clearbluejar/pyghidra-mcp:latest}
+
 services:
   tools:
     <<: *lab-image
@@ -38,6 +41,7 @@ services:
       PYTHONPATH: /opt/lab/panel
       REMAP_NETWORK: remap_net
       REMAP_PROJECTS_VOLUME: remap_projects
+      PYGHIDRA_IMAGE: *pyghidra-image
     volumes:
       - ./workspace:/workspace:ro
       - remap_state:/state
@@ -48,6 +52,15 @@ services:
     ports:
       - "127.0.0.1:8501:8501"
     networks: [remap_net]
+
+  # Pulls the pyghidra-mcp image during `docker compose up` so the first Ghidra
+  # start is quick. Exits at once; the panel starts the real container per project.
+  pyghidra-pull:
+    image: *pyghidra-image
+    container_name: remap-pyghidra-pull
+    entrypoint: ["true"]
+    restart: "no"
+    network_mode: none
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
