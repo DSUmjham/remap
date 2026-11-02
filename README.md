@@ -25,6 +25,14 @@ server) and creates `.env` and `workspace/tools/hello.py`. Then open the panel a
 Running the model on your own computer? See [running a model locally](docs/local-model.md) for model
 sizes and the settings that keep it responsive.
 
+## Exercises
+
+New to the lab? Start with the [student guide](docs/student-guide.md), then work through the stages in order:
+
+1. [Hello, MCP tool](exercises/01-hello/README.md): the edit, restart, test loop.
+2. [CWE triage tool](exercises/02-triage/README.md): flag risky patterns in decompiled C.
+3. [Capstone](exercises/03-capstone/README.md): chain your tool with Ghidra and measure what it adds.
+
 ## Security Note
 
 User code runs in the `tools` container, which has no Docker socket. Only the `panel` container mounts
