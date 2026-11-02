@@ -5,7 +5,12 @@ Set-Location $PSScriptRoot
 if (Test-Path .env) {
     Write-Host ".env already exists; leaving it alone. Delete it to run setup again."
 } else {
-    $ollama = Read-Host "Ollama URL (blank to run a model on this machine instead)"
+    Write-Host "Model server (Ollama):"
+    Write-Host "  Enter  run Ollama in Docker"
+    Write-Host "  host   Ollama installed on this computer (see docs/local-model.md)"
+    Write-Host "  URL    a shared server, e.g. http://server:11434"
+    $ollama = Read-Host "Choice"
+    if ($ollama -eq "host") { $ollama = "http://host.docker.internal:11434" }
     $bytes = New-Object byte[] 32
     [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
     $secret = ($bytes | ForEach-Object { $_.ToString("x2") }) -join ""

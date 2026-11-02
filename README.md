@@ -19,8 +19,11 @@ git clone https://github.com/DSUmjham/remap && cd remap
 docker compose up -d
 ```
 
-`setup.sh` asks for your Ollama URL (leave blank to run a small model on your machine) and creates `.env`
-and `workspace/tools/hello.py`. Then open the panel and the chat.
+`setup.sh` asks where the model runs (Ollama in Docker, Ollama installed on your computer, or a shared
+server) and creates `.env` and `workspace/tools/hello.py`. Then open the panel and the chat.
+
+Running the model on your own computer? See [running a model locally](docs/local-model.md) for model
+sizes and the settings that keep it responsive.
 
 ## Security Note
 

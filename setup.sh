@@ -6,7 +6,12 @@ cd "$(dirname "$0")"
 if [ -f .env ]; then
   echo ".env already exists; leaving it alone. Delete it to run setup again."
 else
-  read -r -p "Ollama URL (blank to run a model on this machine instead): " ollama_url
+  echo "Model server (Ollama):"
+  echo "  Enter  run Ollama in Docker (CPU only, slow on Macs)"
+  echo "  host   Ollama installed on this computer (recommended on Macs, see docs/local-model.md)"
+  echo "  URL    a shared server, e.g. http://server:11434"
+  read -r -p "Choice: " ollama_url
+  [ "$ollama_url" = "host" ] && ollama_url="http://host.docker.internal:11434"
   secret="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
   {
     echo "LAB_IMAGE=${LAB_IMAGE:-ghcr.io/dsumjham/remap:latest}"

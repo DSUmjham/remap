@@ -193,12 +193,16 @@ The panel creates project folders with mode `0777` so a container running as ano
 
 The upstream image is multi-arch (amd64 and arm64), so it runs natively on Apple Silicon.
 
-## Open WebUI and the model
+## Open WebUI and the Model
 
 - `TOOL_SERVER_CONNECTIONS` registers `http://tools:8000/hello` and `http://tools:8000/pyghidra` as
   OpenAPI tool servers. Open WebUI reads it **only on first boot**; later changes go through its admin settings
   and are stored in the `openwebui` volume.
-- `OLLAMA_BASE_URL` points at either a shared server (from `setup.sh`) or `http://ollama:11434`.
+- `OLLAMA_BASE_URL` points at a shared server, Ollama on the host (`http://host.docker.internal:11434`),
+  or the bundled `http://ollama:11434`, depending on the answer to `setup.sh`.
+- Title, tag and follow-up generation and the Notes, Memories and Calendar features are off by default
+  (also first boot only), so a local model is not kept busy by background calls. See
+  [running a model locally](local-model.md).
 - The `ollama` service only starts when `COMPOSE_PROFILES=local-model` is set in `.env`, which setup does
   when you leave the Ollama URL blank. It starts without any model.
 

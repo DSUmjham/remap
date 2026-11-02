@@ -43,6 +43,8 @@ services:
       - remap_state:/state
       - remap_projects:/projects
       - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # System tab can reach Ollama on the host
     ports:
       - "127.0.0.1:8501:8501"
     networks: [remap_net]
@@ -55,6 +57,13 @@ services:
       WEBUI_NAME: REMAP
       WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:?run ./setup.sh first}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      # Fewer background model calls and built-in tools so local models stay snappy.
+      ENABLE_TITLE_GENERATION: "False"
+      ENABLE_TAGS_GENERATION: "False"
+      ENABLE_FOLLOW_UP_GENERATION: "False"
+      ENABLE_MEMORIES: "False"
+      ENABLE_NOTES: "False"
+      ENABLE_CALENDAR: "False"
       # Read on first boot only. Later changes are made in Admin Settings > Tools.
       TOOL_SERVER_CONNECTIONS: >-
         [{"type":"openapi","url":"http://tools:8000/hello","path":"openapi.json","auth_type":"none","config":{"enable":true},"info":{"id":"hello","name":"hello"}},
